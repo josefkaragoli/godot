@@ -36,6 +36,7 @@
 class AnimationNodeBlendSpace1D : public AnimationRootNode {
 	GDCLASS(AnimationNodeBlendSpace1D, AnimationRootNode);
 
+	protected:
 	enum {
 		MAX_BLEND_POINTS = 64
 	};
@@ -62,6 +63,13 @@ class AnimationNodeBlendSpace1D : public AnimationRootNode {
 
 	StringName blend_position;
 
+	struct BlendWeights {
+		int points[2] = { -1, -1 };
+		float weights[2] = { 0 };
+	};
+
+	BlendWeights get_blend_values(const float p_blend_pos) const;
+
 protected:
 	virtual void _validate_property(PropertyInfo &property) const;
 	static void _bind_methods();
@@ -72,9 +80,9 @@ public:
 
 	virtual void get_child_nodes(List<ChildNode> *r_child_nodes);
 
-	void add_blend_point(const Ref<AnimationRootNode> &p_node, float p_position, int p_at_index = -1);
+	virtual void add_blend_point(const Ref<AnimationRootNode> &p_node, float p_position, int p_at_index = -1);
+	virtual void set_blend_point_node(int p_point, const Ref<AnimationRootNode> &p_node);
 	void set_blend_point_position(int p_point, float p_position);
-	void set_blend_point_node(int p_point, const Ref<AnimationRootNode> &p_node);
 
 	float get_blend_point_position(int p_point) const;
 	Ref<AnimationRootNode> get_blend_point_node(int p_point) const;
@@ -93,8 +101,8 @@ public:
 	void set_value_label(const String &p_label);
 	String get_value_label() const;
 
-	float process(float p_time, bool p_seek);
-	String get_caption() const;
+	virtual float process(float p_time, bool p_seek) override;
+	virtual String get_caption() const override;
 
 	Ref<AnimationNode> get_child_by_name(const StringName &p_name);
 
